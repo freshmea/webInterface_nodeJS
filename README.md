@@ -21,3 +21,9 @@
 * 아두이노 웹 컨트롤 하기. 
 * ip, subnetmask, gateway
 * webserver 를 설정해서 외부에서 연결할때의 문제점. 
+- - -
+## study3
+- - -
+* javascript 로 serialport 사용해서 신호를 받고 신호를 주기.
+* socket.io 와 serialport의 write로 신호 주고 받음.
+* 구름IDE 로 웹서버 구동해서 신호 주고 받기.
