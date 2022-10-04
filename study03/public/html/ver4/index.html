@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang=ko>
+
+<head>
+    <style>
+		#canvas { border: 1px solid lightgrey; }
+        body { padding: 25px;  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif; }
+        iframe { overflow: hidden; }
+        #title { font-weight: bold;  font-size: 12.5px; }
+        a { color: #00B7FF; }
+    </style>
+	<title>Communicate with Arduino</title>
+</head>
+
+<body>
+	<table border="0">
+        <tr><td id="title">Communicate with Arduino</td></tr>
+        <tr>
+            <td width="70"> &nbsp; <img id="rImgLed" src="images/off.gif"></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td width="70"> &nbsp; <img id="gImgLed" src="images/off.gif"></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td width="70"> &nbsp; <img id="bImgLed" src="images/off.gif"></td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+			<td><a id="rledOn" href="/rled_on" target="iframe">Turn On RedLED</a></td>
+        </tr>
+        <tr>
+			<td><a id="rledOff" href="/rled_off" target="iframe">Turn Off RedLED</a></td>
+        </tr>
+        <tr>
+			<td><a id="gledOn" href="/gled_on" target="iframe">Turn On GreenLED</a></td>
+        </tr>
+        <tr>
+			<td><a id="gledOff" href="/gled_off" target="iframe">Turn Off GreenLED</a></td>
+        </tr>
+        <tr>
+			<td><a id="bledOn" href="/bled_on" target="iframe">Turn On BlueLED</a></td>
+        </tr>
+        <tr>
+			<td><a id="bledOff" href="/bled_off" target="iframe">Turn Off BlueLED</a></td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+
+		<tr><td>LED State &nbsp; : </td><td id="led"></td></tr>
+        <tr><td colspan="2">&nbsp;</td></tr>
+        <tr><td colspan="2"><canvas id="canvas" width="160" height="20" style="border:1px solid #000000;"></canvas></td></tr>
+        <tr><td colspan="2"><canvas id="canvas2" width="160" height="20" style="border:1px solid #000000;"></canvas></td></tr>
+        <tr><td>ADC Value : </td><td id="adc"></td></tr>
+        <tr><td>Servo Value : </td><td id="sev"></td></tr>
+        <tr>
+			<td><a id="sev0" href="/sev0" target="iframe1">SEV 0: 45</a></td>
+        </tr>
+        <tr>
+			<td><a id="sev1" href="/sev1" target="iframe1">SEV 1: 90</a></td>
+        </tr>
+        <tr>
+			<td><a id="sev2" href="/sev2" target="iframe1">SEV 2: 135</a></td>
+        </tr>
+	</table>
+    <iframe src="about:blank" width="0" height="0" frameborder="0" border="0" marginwidth="0" marginheight="0" name="iframe"></iframe>
+    <iframe src="about:blank" width="0" height="0" frameborder="0" border="0" marginwidth="0" marginheight="0" name="iframe1"></iframe>
+    
+    <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	
+    <script>
+	
+	
+	$(document).ready(function() 
+	{
+		$(function()
+        {
+            var val    = 0;
+            var oldval = 0;
+            var val2    = 0;
+            var oldval2 = 0;
+			var socket = io();
+				
+			socket.on('led', function( ledStatus ){
+				$('#led').text(ledStatus);
+				console.log(ledStatus);
+				if(ledStatus=='rOn')
+					$('#rImgLed').attr('src', "images/onRed.gif");
+				else if (ledStatus=='rOff')
+					$('#rImgLed').attr('src', "images/off.gif");
+				else if (ledStatus=='gOn')
+					$('#gImgLed').attr('src', "images/onGreen.gif");
+				else if (ledStatus=='gOff')
+					$('#gImgLed').attr('src', "images/off.gif");
+				else if (ledStatus=='bOn')
+					$('#bImgLed').attr('src', "images/onBlue.gif");
+				else if (ledStatus=='bOff')
+					$('#bImgLed').attr('src', "images/off.gif");
+			});
+
+			socket.on('sev', function( sevStatus ){
+				$('#sev').text(sevStatus);
+				oldval2 = val2;
+				val2 = parseInt(sevStatus);
+
+				var canvas2 = document.getElementById('canvas2');
+				if (canvas2.getContext){
+					var ctx2 = canvas2.getContext('2d');
+					if( val2 != oldval2 ) {
+						ctx2.fillStyle = 'rgb(0, 200, 0)';
+						ctx2.fillRect(0,   0,    val2, 20);
+						ctx2.fillStyle = 'rgb(255, 255, 255)';
+						ctx2.fillRect(val2, 0, 1024/6, 20);
+					}
+				}
+			});
+            
+			socket.on('adc', function( adcValue ){
+				$('#adc').text(adcValue);
+				
+				oldval = val;
+				// val = parseInt(adcValue);
+				val = parseInt(adcValue)/6;
+				
+				var canvas = document.getElementById('canvas');
+						
+				if (canvas.getContext){
+					var ctx = canvas.getContext('2d');
+					
+					if( val != oldval ) {
+					//*	// 512 x 20
+						ctx.fillStyle = 'rgb(0, 200, 0)';
+						ctx.fillRect(0,   0,    val, 20);
+						ctx.fillStyle = 'rgb(255, 255, 255)';
+						ctx.fillRect(val, 0, 1024/6, 20);
+					//*/
+					/*  //  20 x 512
+						ctx.fillStyle = 'rgb(255, 255, 255)';
+						ctx.fillRect(0, 0, 20, val);
+						ctx.fillStyle = 'rgb(0, 200, 0)';
+						ctx.fillRect(0, 512-val, 20, val);
+					*/
+					}
+				}
+			});
+		});
+	});
+	</script>
+
+</body>
+</html>

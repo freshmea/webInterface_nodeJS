@@ -26,4 +26,4 @@
 - - -
 * javascript 로 serialport 사용해서 신호를 받고 신호를 주기.
 * socket.io 와 serialport의 write로 신호 주고 받음.
-* 구름IDE 로 웹서버 구동해서 신호 주고 받기.
+* 구름IDE 로 웹서버 구동해서 신호 주고 받기.( 다음에)
